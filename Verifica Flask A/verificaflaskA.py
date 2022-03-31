@@ -3,7 +3,7 @@
 # con l’elenco ordinato in ordine alfabetico delle stazioni radio presenti in quel quartiere;
 # 3. Avere la posizione in città di una stazione radio. L’utente sceglie il nome della stazione da un menù a tendina (i nomi delle stazioni devono essere ordinati in ordine 
 # alfabetico), clicca su un bottone e ottiene la mappa del quartiere che contiene la stazione radio, con un pallino nero sulla posizione della stazione radio.
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, request, Response, redirect, url_for
 app = Flask(__name__)
 
 import io
@@ -20,19 +20,42 @@ stazioni = pd.read_csv('/workspace/flask/Verifica Flask A/templates/coordfix_rip
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('home.html')
+    return render_template('home1.html')
 
 @app.route('/numero', methods=['GET'])
-def num():
+def numero():
+  global risultato
   risultato = stazioni.groupby('MUNICIPIO')['OPERATORE'].count().reset_index().sort_values(by='MUNICIPIO',ascending=True)
   return render_template('link1.html', risultato = risultato.to_html())
 
+@app.route('/grafico', methods=['GET'])
+def grafico():
+  # Costruzione del grafico
+  fig, ax = plt.subplots(figsize=(12,8))
+  x = risultato.MUNICIPIO
+  y = risultato.OPERATORE
+  ax.bar(x, y, color = "#304C89")
+  # Visualizzazione del grafico
+  output = io.BytesIO()
+  FigureCanvas(fig).print_png(output)
+  return Response(output.getvalue(), mimetype='image/png')
+
+@app.route('/selezione', methods=['GET'])
+def selezione():
+  scelta = request.args['scelta']
+  if scelta == 'es1':
+    return redirect(url_for('numero'))
+  elif scelta == 'es2':
+    return redirect(url_for('input'))
+  else:
+    return redirect(url_for('dropdown'))
+
 @app.route('/input', methods=['GET'])
-def input1():
+def input():
   return render_template
 
 @app.route('/dropdown', methods=['GET'])
-def dropd():
+def dropdown():
   return render_template
 
 if __name__ == '__main__':
