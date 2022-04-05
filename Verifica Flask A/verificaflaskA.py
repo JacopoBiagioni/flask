@@ -77,11 +77,27 @@ def mappa():
 @app.route('/dropdown', methods=['GET'])
 def dropdown():
   nomiStazioni = stazioni.OPERATORE.to_list()
+  nomiStazioni = list(set(nomiStazioni))
+  nomiStazioni.sort()
   return render_template('dropdown.html', stazioni = nomiStazioni)
 
 @app.route('/sceltastazione', methods=['GET'])
 def sceltastazione():
-  return render_template
+  global stazione_utente, quartiere_utente
+  stazione = request.args['stazione']
+  stazione_utente = stazionigeo[stazionigeo.OPERATORE == stazione]
+  quartiere_utente = quartieri[quartieri.contains(stazione_utente.geometry.squeeze())]
+  return render_template('vistastazione.html', quartiere = quartiere_utente.to_html())
+
+@app.route('/mappaQuartiere', methods=['GET'])
+def mappaquartiere():
+  fig, ax = plt.subplots(figsize = (12,8))
+  stazione_utente.to_crs(epsg=3857).plot(ax=ax, color='r', edgecolor='k')
+  quartiere_utente.to_crs(epsg=3857).plot(ax=ax, alpha=0.5, edgecolor='k')
+  ctx.add_basemap(ax=ax)
+  output = io.BytesIO()
+  FigureCanvas(fig).print_png(output)
+  return Response(output.getvalue(), mimetype='image/png')
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=3245, debug=True)

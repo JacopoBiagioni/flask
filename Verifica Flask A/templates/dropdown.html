@@ -1,5 +1,5 @@
 <form action="/sceltastazione" method = "GET">
-    <select name="">
+    <select name="stazione">
         {% for stazione in stazioni%}
         <option value="{{stazione}}" >{{stazione}}</option>
         {%endfor%}
