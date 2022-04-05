@@ -17,6 +17,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 stazioni = pd.read_csv('/workspace/flask/Verifica Flask A/templates/coordfix_ripetitori_radiofonici_milano_160120_loc_final.csv', sep=';')
+stazionigeo = gpd.read_file('/workspace/flask/Verifica Flask A/templates/ds710_coordfix_ripetitori_radiofonici_milano_160120_loc_final.geojson')
+quartieri = gpd.read_file('/workspace/flask/Verifica Flask A/templates/ds964_nil_wm (1).zip')
 
 @app.route('/', methods=['GET'])
 def home():
@@ -52,7 +54,14 @@ def selezione():
 
 @app.route('/input', methods=['GET'])
 def input():
-  return render_template
+  return render_template('input.html')
+
+@app.route('/ricerca', methods=['GET'])
+def ricerca():
+  quartiere = request.args['quartieri']
+  quartiereUtente = quartieri[quartieri['NIL'].str.contains(quartiere)]
+  stazioniQuartieri = stazionigeo[stazionigeo.within(quartiereUtente.geometry.squeeze())]
+  return render_template('elenco.html', risultato = stazioniQuartieri.to_html())
 
 @app.route('/dropdown', methods=['GET'])
 def dropdown():
