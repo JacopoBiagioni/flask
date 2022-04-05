@@ -58,13 +58,29 @@ def input():
 
 @app.route('/ricerca', methods=['GET'])
 def ricerca():
+  global quartiereUtente, stazioniQuartieri
   quartiere = request.args['quartieri']
   quartiereUtente = quartieri[quartieri['NIL'].str.contains(quartiere)]
   stazioniQuartieri = stazionigeo[stazionigeo.within(quartiereUtente.geometry.squeeze())]
   return render_template('elenco.html', risultato = stazioniQuartieri.to_html())
 
+@app.route('/mappa', methods=['GET'])
+def mappa():
+  fig, ax = plt.subplots(figsize = (12,8))
+  quartiereUtente.to_crs(epsg=3857).plot(ax=ax, alpha=0.5, edgecolor='k')
+  stazioniQuartieri.to_crs(epsg=3857).plot(ax=ax, color='r', edgecolor='k')
+  ctx.add_basemap(ax=ax)
+  output = io.BytesIO()
+  FigureCanvas(fig).print_png(output)
+  return Response(output.getvalue(), mimetype='image/png')
+
 @app.route('/dropdown', methods=['GET'])
 def dropdown():
+  nomiStazioni = stazioni.OPERATORE.to_list()
+  return render_template('dropdown.html', stazioni = nomiStazioni)
+
+@app.route('/sceltastazione', methods=['GET'])
+def sceltastazione():
   return render_template
 
 if __name__ == '__main__':
