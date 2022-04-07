@@ -87,7 +87,7 @@ def sceltastazione():
   stazione = request.args['stazione']
   stazione_utente = stazionigeo[stazionigeo.OPERATORE == stazione]
   quartiere_utente = quartieri[quartieri.contains(stazione_utente.geometry.squeeze())]
-  return render_template('vistastazione.html', quartiere = quartiere_utente.to_html())
+  return render_template('vistalinee.html', quartiere = quartiere_utente.to_html())
 
 @app.route('/mappaQuartiere', methods=['GET'])
 def mappaquartiere():
