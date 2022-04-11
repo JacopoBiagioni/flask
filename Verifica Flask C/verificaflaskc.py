@@ -56,7 +56,7 @@ def elenconlinee():
   quartiere = request.args['quartieri']
   quartiereUtente = quartieri[quartieri['NIL'].str.contains(quartiere)]
   linee_quartiere = linee[linee.intersects(quartiereUtente.geometry.squeeze())].sort_values('linea')
-  return render_template('elenco.html', risultato = linee_quartiere.to_html())
+  return render_template('elencolinee.html', risultato = linee_quartiere.to_html())
 
 @app.route('/tendina', methods=['GET'])
 def tendina():
@@ -65,7 +65,7 @@ def tendina():
 @app.route('/sceltalinee', methods=['GET'])
 def sceltalinee(): 
   global lineeUtente
-  linea = int(request.args["linea"])
+  linea = request.args["linea"]
   lineeUtente = linee[linee["linea"] == linea]
   return render_template("vistalinee.html", linea = linea)
 
@@ -73,7 +73,7 @@ def sceltalinee():
 def mappa():
   fig, ax = plt.subplots(figsize = (12,8))
   lineeUtente.to_crs(epsg=3857).plot(ax=ax, color='r')
-  quartieri.to_crs(epsg=3857).plot(ax=ax, alpha=0.5, edgecolor='k')
+  quartieri.to_crs(epsg=3857).plot(ax=ax, alpha=0.5)
   ctx.add_basemap(ax=ax)
   output = io.BytesIO()
   FigureCanvas(fig).print_png(output)
