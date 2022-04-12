@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 linee = gpd.read_file('/workspace/flask/Verifica Flask C/templates/tpl_percorsi.geojson')
 quartieri = gpd.read_file('/workspace/flask/Verifica Flask C/templates/ds964_nil_wm (1).zip')
 
+linee['lung_km'] = linee['lung_km'].astype(float)
+linee['linea'] = linee['linea'].astype(int)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -42,8 +44,8 @@ def lunghezza():
 
 @app.route("/elenco", methods=["GET"])
 def elenco():
-    Min = min(request.args["lunghezza_minima"], request.args["lunghezza_massima"])
-    Max = max(request.args["lunghezza_minima"], request.args["lunghezza_massima"])
+    Min = min(float(request.args["lunghezza_minima"]), float(request.args["lunghezza_massima"]))
+    Max = max(float(request.args["lunghezza_minima"]), float(request.args["lunghezza_massima"]))
     linee_distanza = linee[(linee["lung_km"] > Min) & (linee["lung_km"] < Max)].sort_values("linea")
     return render_template("elenco.html", tabella = linee_distanza.to_html())
 
@@ -65,7 +67,7 @@ def tendina():
 @app.route('/sceltalinee', methods=['GET'])
 def sceltalinee(): 
   global lineeUtente
-  linea = request.args["linea"]
+  linea = int(request.args["linea"])
   lineeUtente = linee[linee["linea"] == linea]
   return render_template("vistalinee.html", linea = linea)
 
