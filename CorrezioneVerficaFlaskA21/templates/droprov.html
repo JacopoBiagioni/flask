@@ -1,0 +1,8 @@
+<form action="/infoprov3" method = "GET">
+    <select name="provincia">
+        {% for i in province%}
+        <option value="{{i}}" >{{i}}</option>
+        {%endfor%}
+    </select>
+    <p><input type = "submit" value = "Submit" /></p>
+</form>
