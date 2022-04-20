@@ -41,7 +41,8 @@ def infoprov():
     provincia = request.args['provincia']
     provUtente = province[province['DEN_UTS'] == provincia]
     comuniProv = comuni[comuni.within(provUtente.geometry.squeeze())]
-    return render_template('infoprov.html')
+    area = province['geometry'].area/ 10**6
+    return render_template('infoprov.html', area = area)
 
 @app.route('/mappa', methods=['GET'])
 def mappa():
@@ -71,7 +72,8 @@ def infoprov2():
     provincia = request.args['provincia']
     prov_utente = province[province['DEN_UTS'] == provincia]
     com_prov = comuni[comuni.within(prov_utente.geometry.squeeze())]
-    return render_template('infoprov2.html')
+    area = province['geometry'].area/ 10**6
+    return render_template('infoprov2.html', area = area)
 
 @app.route('/mappa2', methods=['GET'])
 def mappa2():
@@ -107,7 +109,8 @@ def infoprov3():
     provincia = request.args['provincia']
     provinUtente = province[province['DEN_UTS'] == provincia]
     comuProv = comuni[comuni.within(provinUtente.geometry.squeeze())]
-    return render_template('infoprov3.html')
+    area = province['geometry'].area/ 10**6
+    return render_template('infoprov3.html', area = area)
 
 @app.route('/mappa3', methods=['GET'])
 def mappa3():
